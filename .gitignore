@@ -1,0 +1,4 @@
+/.build/
+/UUID-V7-*/
+/UUID-V7-*.tar.gz
+!/.gitignore
