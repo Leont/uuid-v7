@@ -11,20 +11,22 @@ use POSIX::RT::Clock;
 
 my $clock = POSIX::RT::Clock->new('realtime');
 my $nano_to_milli = 1_000_000;
+my $format = 'H8H4H4H4H12';
+my $to_12_bit = 245; # $nano_to_mill / 245 == 4081
+my $uuid_v7_marker = 0x7000;
 
 sub generate_uuid_v7 {
 	use integer;
 	my $time = $clock->get_time;
 	my $nanoseconds = $time->nsec;
-	my $primary = $time->sec * 1000 + $nanoseconds / $nano_to_milli;
-	my $secondary = $nanoseconds % $nano_to_milli / 245; # 0..4081 is almost 12 bits
+	my $milliseconds = $time->sec * 1000 + $nanoseconds / $nano_to_milli;
+	my $sub_milliseconds = $nanoseconds % $nano_to_milli / $to_12_bit;
 
-	my $result = pack "Q>A8", $primary << 16, random_bytes(8);
-	vec($result, 3, 16) = $secondary;
+	my $high = ($milliseconds << 16) + $sub_milliseconds | $uuid_v7_marker;
+	my $result = pack 'Q>A8', $high, random_bytes(8);
 	vec($result, 35, 2) = 2; # RFC 9562 variant
-	vec($result, 13, 4) = 7; # UUIDv7
 
-	return join '-', unpack 'A8A4A4A4A12', unpack 'H*', $result;
+	return join '-', unpack $format, $result;
 }
 
 1;
