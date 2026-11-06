@@ -1,7 +1,8 @@
 Revision history for UUID-V7
 
 {{$NEXT}}
-          - Add extract_uuid_v7_time
+          - Add extract_uuid_v7_time, uuid_string_to_binary,
+            uuid_binary_to_string and is_uuid_v7
 
 0.001     2026-11-06 00:04:40+01:00 Europe/Brussels
           - Initial release

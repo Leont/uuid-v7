@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Exporter 'import';
-our @EXPORT_OK = qw/generate_uuid_v7 extract_uuid_v7_time/;
+our @EXPORT_OK = qw/generate_uuid_v7 extract_uuid_v7_time uuid_string_to_binary uuid_binary_to_string is_uuid_v7/;
 our %EXPORT_TAGS = (all => \@EXPORT_OK);
 
 use Carp;
@@ -33,13 +33,31 @@ sub generate_uuid_v7 {
 
 sub extract_uuid_v7_time {
 	my ($uuid) = @_;
-	my $binary = pack $format, split /-/, $uuid;
+	my $binary = uuid_string_to_binary($uuid);
 	croak 'UUID is not version 7' if vec($binary, 13, 4) != 7;
 
 	my $first = unpack 'Q>', $binary;
 	my $time = $first >> 16;
 	$time += ($first & 0x0FFF) * $to_12_bit / $nano_to_milli;
 	return $time / 1000;
+}
+
+sub uuid_string_to_binary {
+	my ($uuid) = @_;
+	croak 'UUID has incorrect length' if length $uuid != 36;
+	return pack $format, split /-/, $uuid;
+}
+
+sub uuid_binary_to_string {
+	my ($input) = @_;
+	croak 'UUID binary has incorrect length' if length $input != 16;
+	return join '-', unpack $format, $input;
+}
+
+sub is_uuid_v7 {
+	my ($uuid) = @_;
+	my $binary = uuid_string_to_binary($uuid);
+	return vec($binary, 13, 4) == 7;
 }
 
 1;
@@ -53,6 +71,10 @@ sub extract_uuid_v7_time {
  my $uuid = generate_uuid_v7();
  my $time = extract_uuid_v7_time($uuid);
 
+ my binary = uuid_string_to_binary($uuid);
+ my $uuid = uuid_binary_to_string($binary);
+ croak "Not UUIDv7" unless is_uuid_v7($uuid);
+
 =head1 DESCRIPTION
 
 =func generate_uuid_v7
@@ -62,3 +84,15 @@ This will generate a new UUIDv7 identifier. This will use 62 bits of timing info
 =func extract_uuid_v7_time
 
 This will extract the time out of a UUIDv7.
+
+=func uuid_string_to_binary
+
+This will convert a UUID string to its equivalent 16-byte big-endian binary value.
+
+=func uuid_binary_to_string
+
+This will convert a 16-byte big-endian binary value to its equivalent UUID string.
+
+=func is_uuid_v7
+
+This returns true if the UUID is version 7

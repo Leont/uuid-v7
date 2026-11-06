@@ -18,4 +18,9 @@ my $uuid = generate_uuid_v7;
 my $time = extract_uuid_v7_time($uuid);
 ok($time - $now < 0.1, 'Times are equivalentish');
 
+my $binary = uuid_string_to_binary($uuid);
+my $uuid2 = uuid_binary_to_string($binary);
+is($uuid2, $uuid, 'to/from binary round-trips');
+ok(is_uuid_v7($uuid), 'Is a UUIDv7');
+
 done_testing;
