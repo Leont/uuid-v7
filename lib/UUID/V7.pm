@@ -77,22 +77,38 @@ sub is_uuid_v7 {
 
 =head1 DESCRIPTION
 
+UUID version 7 are monotonically ascending and creation-time ordered unique identifiers, making them particularly suitable for database indices.
+
 =func generate_uuid_v7
 
-This will generate a new UUIDv7 identifier. This will use 62 bits of timing information (±250 nanoseconds) for monotonicity with high-frequency UUID generation.
+ my $uuid = generate_uuid_v7();
+
+This will generate a new UUIDv7 identifier. This will use 60 bits of timing information (±250 nanoseconds) for monotonicity with high-frequency UUID generation if available on your platform. It will contain 62 bits of cryptographically strong randomness.
 
 =func extract_uuid_v7_time
+
+ my $time = extract_uuid_v7_time($uuid);
 
 This will extract the time out of a UUIDv7.
 
 =func uuid_string_to_binary
 
+ my $binary = uuid_string_to_binary($uuid);
+
 This will convert a UUID string to its equivalent 16-byte big-endian binary value.
 
 =func uuid_binary_to_string
+
+ my $uuid = uuid_binary_to_string($binary);
 
 This will convert a 16-byte big-endian binary value to its equivalent UUID string.
 
 =func is_uuid_v7
 
+ my $is_7 = is_uuid_v7($uuid);
+
 This returns true if the UUID is version 7
+
+=head1 SEE ALSO
+
+For UUIDv4, L<Crypt::SysRandom|Crypt::SysRandom> provides a C<random_uuid> function.
