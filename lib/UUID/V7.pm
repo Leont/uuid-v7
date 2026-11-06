@@ -4,8 +4,10 @@ use strict;
 use warnings;
 
 use Exporter 'import';
-our @EXPORT_OK = qw/generate_uuid_v7/;
+our @EXPORT_OK = qw/generate_uuid_v7 extract_uuid_v7_time/;
+our %EXPORT_TAGS = (all => \@EXPORT_OK);
 
+use Carp;
 use Crypt::SysRandom 'random_bytes';
 use POSIX::RT::Clock;
 
@@ -29,18 +31,34 @@ sub generate_uuid_v7 {
 	return join '-', unpack $format, $result;
 }
 
+sub extract_uuid_v7_time {
+	my ($uuid) = @_;
+	my $binary = pack $format, split /-/, $uuid;
+	croak 'UUID is not version 7' if vec($binary, 13, 4) != 7;
+
+	my $first = unpack 'Q>', $binary;
+	my $time = $first >> 16;
+	$time += ($first & 0x0FFF) * $to_12_bit / $nano_to_milli;
+	return $time / 1000;
+}
+
 1;
 
 # ABSTRACT: A precise UUIDv7 implementation
 
 =head1 SYNOPSIS
 
- use UUID::V7 'generate_uuid_v7';
+ use UUID::V7 ':all';
 
  my $uuid = generate_uuid_v7();
+ my $time = extract_uuid_v7_time($uuid);
 
 =head1 DESCRIPTION
 
 =func generate_uuid_v7
 
 This will generate a new UUIDv7 identifier. This will use 62 bits of timing information (±250 nanoseconds) for monotonicity with high-frequency UUID generation.
+
+=func extract_uuid_v7_time
+
+This will extract the time out of a UUIDv7.
