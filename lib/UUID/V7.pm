@@ -9,7 +9,7 @@ our %EXPORT_TAGS = (all => \@EXPORT_OK);
 
 use Carp;
 use Crypt::SysRandom 'random_bytes';
-use POSIX::RT::Clock;
+use POSIX::RT::Clock 0.024;
 
 my $clock = POSIX::RT::Clock->new('realtime');
 my $nano_to_milli = 1_000_000;
