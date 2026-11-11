@@ -2,6 +2,7 @@ Revision history for UUID-V7
 
 {{$NEXT}}
           - Require POSIX::RT::Clock 0.024 for Time::Spec support
+          - Make test more tolerant for lower-precision systems
 
 0.002     2026-11-06 17:28:22+01:00 Europe/Brussels
           - Add extract_uuid_v7_time, uuid_string_to_binary,
