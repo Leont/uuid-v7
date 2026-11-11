@@ -11,6 +11,8 @@ use Carp;
 use Crypt::SysRandom 'random_bytes';
 use POSIX::RT::Clock 0.024;
 
+use constant HAS_NANO => POSIX::RT::Clock->new('realtime')->get_resolution->nsec < 1000;
+
 my $clock = POSIX::RT::Clock->new('realtime');
 my $nano_per_milli = 1_000_000;
 my $format = 'H8H4H4H4H12';
@@ -26,6 +28,7 @@ sub generate_uuid_v7 {
 
 	my $high = ($milliseconds << 16) + $sub_milliseconds | $uuid_v7_marker;
 	my $result = pack 'Q>A8', $high, random_bytes(8);
+	vec($result, 28, 2) = vec($result, 35, 2) if not HAS_NANO; # lowest two bits of timestamp set to unused randomness.
 	vec($result, 35, 2) = 2; # RFC 9562 variant
 
 	return join '-', unpack $format, $result;
