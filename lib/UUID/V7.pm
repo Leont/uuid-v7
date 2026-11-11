@@ -71,7 +71,7 @@ sub is_uuid_v7 {
  my $uuid = generate_uuid_v7();
  my $time = extract_uuid_v7_time($uuid);
 
- my binary = uuid_string_to_binary($uuid);
+ my $binary = uuid_string_to_binary($uuid);
  my $uuid = uuid_binary_to_string($binary);
  croak "Not UUIDv7" unless is_uuid_v7($uuid);
 
