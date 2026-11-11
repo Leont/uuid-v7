@@ -79,6 +79,8 @@ sub is_uuid_v7 {
 
 UUID version 7 are monotonically ascending and creation-time ordered unique identifiers, making them particularly suitable for database indices.
 
+B<NOTE:> this module requires a perl with 64-bit integers; if you want to use it on a 32-bit system you need to compile your perl with the C<use64bitint> option.
+
 =func generate_uuid_v7
 
  my $uuid = generate_uuid_v7();

@@ -1,6 +1,7 @@
 Revision history for UUID-V7
 
 {{$NEXT}}
+          - Explicitly require a perl with 64-bit integers
           - Require POSIX::RT::Clock 0.024 for Time::Spec support
           - Make test more tolerant for lower-precision systems
 
