@@ -12,17 +12,17 @@ use Crypt::SysRandom 'random_bytes';
 use POSIX::RT::Clock 0.024;
 
 my $clock = POSIX::RT::Clock->new('realtime');
-my $nano_to_milli = 1_000_000;
+my $nano_per_milli = 1_000_000;
 my $format = 'H8H4H4H4H12';
-my $to_12_bit = 245; # $nano_to_mill / 245 == 4081
+my $submilli_modulus = 1 << 12;
 my $uuid_v7_marker = 0x7000;
 
 sub generate_uuid_v7 {
 	use integer;
 	my $time = $clock->get_time;
 	my $nanoseconds = $time->nsec;
-	my $milliseconds = $time->sec * 1000 + $nanoseconds / $nano_to_milli;
-	my $sub_milliseconds = $nanoseconds % $nano_to_milli / $to_12_bit;
+	my $milliseconds = $time->sec * 1000 + $nanoseconds / $nano_per_milli;
+	my $sub_milliseconds = $nanoseconds % $nano_per_milli * $submilli_modulus / $nano_per_milli;
 
 	my $high = ($milliseconds << 16) + $sub_milliseconds | $uuid_v7_marker;
 	my $result = pack 'Q>A8', $high, random_bytes(8);
@@ -36,9 +36,9 @@ sub extract_uuid_v7_time {
 	my $binary = uuid_string_to_binary($uuid);
 	croak 'UUID is not version 7' if vec($binary, 13, 4) != 7;
 
-	my $first = unpack 'Q>', $binary;
-	my $time = $first >> 16;
-	$time += ($first & 0x0FFF) * $to_12_bit / $nano_to_milli;
+	my $high = unpack 'Q>', $binary;
+	my $time = $high >> 16;
+	$time += ($high & 0x0FFF) / $submilli_modulus;
 	return $time / 1000;
 }
 
