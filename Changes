@@ -2,6 +2,7 @@ Revision history for UUID-V7
 
 {{$NEXT}}
           - Use Postgresql's calculation method for submilliseconds.
+          - Check ivsize instead of use64bitint in Build.PL
 
 0.003     2026-11-11 22:40:44+01:00 Europe/Brussels
           - Explicitly require a perl with 64-bit integers
