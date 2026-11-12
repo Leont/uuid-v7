@@ -28,7 +28,7 @@ sub generate_uuid_v7 {
 
 	my $high = ($milliseconds << 16) + $sub_milliseconds | $uuid_v7_marker;
 	my $result = pack 'Q>A8', $high, random_bytes(8);
-	vec($result, 28, 2) = vec($result, 35, 2) if not HAS_NANO; # lowest two bits of timestamp set to unused randomness.
+	vec($result, 28, 2) ^= vec($result, 35, 2) if not HAS_NANO; # lowest two bits of timestamp set to unused randomness.
 	vec($result, 35, 2) = 2; # RFC 9562 variant
 
 	return join '-', unpack $format, $result;

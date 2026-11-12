@@ -1,6 +1,7 @@
 Revision history for UUID-V7
 
 {{$NEXT}}
+          - Xor additional random crumb into timestamp
 
 0.004     2026-11-12 01:56:27+01:00 Europe/Brussels
           - Use Postgresql's calculation method for submilliseconds.
