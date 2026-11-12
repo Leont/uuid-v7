@@ -1,6 +1,8 @@
 Revision history for UUID-V7
 
 {{$NEXT}}
+
+0.005     2026-11-12 20:13:13+01:00 Europe/Brussels
           - Xor additional random crumb into timestamp
           - Make test more resiliant on low-precision platforms
 
